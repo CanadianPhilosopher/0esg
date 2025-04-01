@@ -3,70 +3,594 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>0esg.com - Grab your popcorn, western entertainment industry is burning</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>0ESG - Tracking DEI/ESG/Woke Related Losses</title>
     <!-- Include Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Basic Reset & Variables */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --header-bg: #f8f8f8;
+            --link-color: #007bff;
+            --button-bg: #e7e7e7;
+            --button-text: #333333;
+            --chart-grid-color: rgba(0, 0, 0, 0.1);
+            --chart-label-color: #666;
+            --tooltip-bg: rgba(0, 0, 0, 0.8);
+            --tooltip-text: #fff;
+        }
+
+        body.dark-mode {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --border-color: #444444;
+            --header-bg: #2a2a2a;
+            --link-color: #64b5f6;
+            --button-bg: #333333;
+            --button-text: #e0e0e0;
+            --chart-grid-color: rgba(255, 255, 255, 0.1);
+            --chart-label-color: #aaa;
+            --tooltip-bg: rgba(255, 255, 255, 0.8);
+            --tooltip-text: #000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+         h1 {
+            margin-bottom: 10px;
+         }
+        .intro {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            color: var(--text-color);
+        }
+
+        a {
+            color: var(--link-color);
+        }
+
+        /* Dark Mode Toggle */
+        #darkModeToggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 8px 12px;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            z-index: 1000; /* Ensure it's above charts */
+        }
+        #darkModeToggle:hover {
+            opacity: 0.8;
+        }
+
+
+        /* Chart Containers */
+        .chart-container {
+            position: relative; /* Needed for chart responsiveness */
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-color); /* Ensure charts have background in dark mode */
+            height: 400px; /* Default height, adjust as needed */
+            width: 100%; /* Take full width of container */
+        }
+
+        /* Responsive height adjustments */
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+        @media (min-width: 1024px) {
+             .chart-container {
+                height: 500px;
+            }
+             /* Adjust timeline height more specifically if needed */
+            #timelineChartContainer {
+                height: 600px; /* Allow more space for horizontal bars */
+            }
+        }
+
+
+        /* Data Table */
+        #dataTableContainer {
+            margin-top: 40px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+
+        #dataTable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        #dataTable th, #dataTable td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        #dataTable thead th {
+            background-color: var(--header-bg);
+            position: sticky;
+            top: 0; /* Stick header to top when scrolling */
+            z-index: 10;
+        }
+
+        #dataTable tbody tr:nth-child(even) {
+            background-color: var(--header-bg); /* Slight alternating background */
+        }
+
+        /* Loading/Error Message */
+        #message {
+            text-align: center;
+            font-style: italic;
+            margin-top: 20px;
+            color: var(--text-color);
+        }
+
+    </style>
 </head>
 <body>
-    <header>
-        <h1>🍿0esg.com🍿</h1>
-        <p>Tracking Reported Financial & Audience Losses Associated with DEI, ESG, and Related Initiatives in Entertainment & Video Games.</p>
-        <p>The West is captured by an anti-consumer and hateful ideological capture. This page documents the consequences.</p>
-        <p class="disclaimer"><strong>Note:</strong> Data presented is currently illustrative test data for demonstration purposes.</p>
-    </header>
+    <button id="darkModeToggle">Toggle Dark Mode</button>
 
-    <main>
-        <section class="chart-container">
-            <h2>Reported Losses by Project/Event (Sample Data)</h2>
-            <div class="chart-wrapper">
-                <canvas id="lossesByProjectChart"></canvas>
-            </div>
-            <p class="chart-description">Comparison of estimated financial losses or underperformance for specific entertainment products or events, based on available reports.</p>
-        </section>
+    <div class="container">
+        <h1>0ESG.com (Demo)</h1>
+        <p class="intro">
+            Tracking estimated financial losses potentially related to DEI, ESG, and 'Woke' initiatives in the Entertainment and Video Game industries.
+            <br>Data sourced from publicly available information and community estimates. View raw data <a href="#dataTableContainer">below</a>.
+        </p>
 
-        <section class="chart-container">
-            <h2>Estimated Losses Trend Over Time (Sample Data)</h2>
-             <div class="chart-wrapper">
-                <canvas id="lossesOverTimeChart"></canvas>
-            </div>
-            <p class="chart-description">Aggregated estimated losses per year based on the sample dataset.</p>
-        </section>
+        <div id="message"><p>Loading data...</p></div>
 
-        <section class="chart-container">
-            <h2>Distribution of Losses by Industry (Sample Data)</h2>
-             <div class="chart-wrapper chart-wrapper-pie">
-                <canvas id="lossesByIndustryChart"></canvas>
-            </div>
-            <p class="chart-description">Breakdown of total estimated sample losses between the Entertainment and Video Games sectors.</p>
-        </section>
+        <h2>Estimated Losses Per Year (Column Chart)</h2>
+        <div class="chart-container" id="columnChartContainer">
+            <canvas id="columnChart"></canvas>
+        </div>
 
-        <section id="data-details">
-            <h2>Sample Data Details</h2>
-            <p>The following table provides details for the sample data points used in the charts above.</p>
+        <h2>Timeline of Estimated Losses (Bar Timeline)</h2>
+        <p style="text-align: center; font-size: 0.9em; margin-bottom: 15px;">(Ordered by Year, showing Title vs. Estimated Loss)</p>
+        <div class="chart-container" id="timelineChartContainer">
+            <canvas id="timelineChart"></canvas>
+        </div>
+
+        <h2>Estimated Losses by Related Initiative Focus (Pie Chart)</h2>
+        <div class="chart-container" id="pieChartContainer">
+            <canvas id="pieChart"></canvas>
+        </div>
+
+        <h2>Raw Data</h2>
+        <div id="dataTableContainer">
             <table id="dataTable">
                 <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Industry</th>
-                        <th>Year</th>
-                        <th>Type of Loss</th>
-                        <th>Est. Loss (Millions USD)</th>
-                        <th>Related Initiative Focus (Reported)</th>
-                        <th>Description / Source Note</th>
+                    <tr id="tableHeader">
+                        <!-- Header generated by JS -->
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Data rows will be inserted here by JavaScript -->
+                <tbody id="tableBody">
+                    <!-- Data rows generated by JS -->
                 </tbody>
             </table>
-        </section>
-    </main>
+        </div>
+         <p style="text-align: center; font-size: 0.8em; margin-top: 30px; color: var(--text-color);">
+            Disclaimer: Data is based on public reports and estimations, and causality is complex. This site presents correlations for informational purposes.
+        </p>
+    </div>
 
-    <footer>
-        <p>© 2023 0esg.com - Data for informational purposes only. Verify independently.</p>
-    </footer>
+    <script>
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQw438ZKd6BpMMD7KRjyQI9xTjS467yFxecgkQOE3SOaTJx60w-TZnSxfbIuypkfLX1LjZcwf3xcU_/pub?gid=0&single=true&output=csv';
 
-    <script src="script.js"></script>
+        // DOM Elements
+        const messageEl = document.getElementById('message');
+        const tableHeaderEl = document.getElementById('tableHeader');
+        const tableBodyEl = document.getElementById('tableBody');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        // Chart instances (global to manage updates/destruction)
+        let columnChartInstance = null;
+        let timelineChartInstance = null;
+        let pieChartInstance = null;
+        let allData = []; // Store fetched data globally
+
+        // --- Utility Functions ---
+
+        // Basic CSV Parser (assumes simple structure, no commas within quoted fields)
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 2) return []; // Need header + at least one data row
+
+            const headers = lines[0].split(',').map(h => h.trim());
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim());
+                // Skip empty lines potentially at the end of the CSV
+                if (values.length !== headers.length || values.every(v => v === '')) {
+                    continue;
+                }
+                const entry = {};
+                headers.forEach((header, index) => {
+                    entry[header] = values[index] || ''; // Handle potentially missing values
+                });
+
+                // Basic data cleaning/typing
+                entry.id = entry.id ? parseInt(entry.id, 10) : null;
+                entry.year = entry.year ? parseInt(entry.year, 10) : null;
+                 // Clean currency format ($1,000M -> 1000) - Adapt based on actual sheet format
+                if (entry.estimatedLoss) {
+                     const lossString = entry.estimatedLoss.replace(/[\$,M]/g, ''); // Remove $, comma, M
+                     entry.estimatedLoss = parseFloat(lossString) || 0; // Convert to number, default to 0 if invalid
+                } else {
+                     entry.estimatedLoss = 0;
+                }
+
+                // Ensure required fields have defaults if missing/invalid
+                entry.title = entry.title || 'N/A';
+                entry.industry = entry.industry || 'Unknown';
+                entry.type = entry.type || 'Unknown';
+                entry.relatedInitiativeFocus = entry.relatedInitiativeFocus || 'Unspecified';
+                entry.description = entry.description || '';
+
+
+                if (entry.id !== null && entry.year !== null) { // Only add valid entries
+                    data.push(entry);
+                }
+            }
+            return data;
+        }
+
+        // Get current chart colors based on mode
+        function getChartColors() {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const bodyStyle = window.getComputedStyle(document.body);
+            return {
+                gridColor: bodyStyle.getPropertyValue('--chart-grid-color').trim(),
+                labelColor: bodyStyle.getPropertyValue('--chart-label-color').trim(),
+                tooltipBg: bodyStyle.getPropertyValue('--tooltip-bg').trim(),
+                tooltipText: bodyStyle.getPropertyValue('--tooltip-text').trim(),
+                // Define base colors for charts - can be customized further
+                barColor: isDarkMode ? 'rgba(75, 192, 192, 0.8)' : 'rgba(54, 162, 235, 0.8)',
+                pieColors: [ // Example palette, add more if needed
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(255, 159, 64, 0.8)',
+                    'rgba(199, 199, 199, 0.8)',
+                     'rgba(83, 102, 255, 0.8)',
+                ]
+            };
+        }
+
+        // --- Data Processing and Chart Creation ---
+
+        function processAndDisplayData(data) {
+            allData = data; // Store data globally
+            if (!data || data.length === 0) {
+                messageEl.innerHTML = '<p>No valid data found or failed to parse.</p>';
+                return;
+            }
+
+            messageEl.style.display = 'none'; // Hide loading message
+
+            // 1. Populate Raw Data Table
+            populateTable(data);
+
+            // 2. Create Charts (call functions that will handle destruction/creation)
+            createOrUpdateCharts();
+        }
+
+        function populateTable(data) {
+            // Create Header Row
+            tableHeaderEl.innerHTML = ''; // Clear existing header
+            if (data.length > 0) {
+                const headers = Object.keys(data[0]);
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    tableHeaderEl.appendChild(th);
+                });
+            }
+
+            // Create Data Rows
+            tableBodyEl.innerHTML = ''; // Clear existing rows
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                Object.values(item).forEach(value => {
+                    const td = document.createElement('td');
+                    // Format numbers nicely if needed (e.g., currency)
+                    if (typeof value === 'number' && !Number.isInteger(value)) {
+                        td.textContent = value.toFixed(2); // Example: 2 decimal places for floats
+                    } else if (typeof value === 'number' && item.estimatedLoss === value) {
+                        // Crude check if it's the loss column, add 'M' back - adjust if format differs
+                        td.textContent = `$${value}M`;
+                    }
+                     else {
+                        td.textContent = value !== null ? value : ''; // Display empty string for null
+                    }
+                    tr.appendChild(td);
+                });
+                tableBodyEl.appendChild(tr);
+            });
+        }
+
+        function createOrUpdateCharts() {
+            if (!allData || allData.length === 0) return; // No data to chart
+
+            const colors = getChartColors(); // Get colors for the current mode
+
+            // Destroy existing charts before recreating
+            if (columnChartInstance) columnChartInstance.destroy();
+            if (timelineChartInstance) timelineChartInstance.destroy();
+            if (pieChartInstance) pieChartInstance.destroy();
+
+            // --- Chart 1: Column Chart (Losses per Year) ---
+            const yearlyLosses = allData.reduce((acc, item) => {
+                if (item.year && item.estimatedLoss > 0) {
+                    acc[item.year] = (acc[item.year] || 0) + item.estimatedLoss;
+                }
+                return acc;
+            }, {});
+
+            const sortedYears = Object.keys(yearlyLosses).map(Number).sort((a, b) => a - b);
+            const columnLabels = sortedYears.map(String);
+            const columnData = sortedYears.map(year => yearlyLosses[year]);
+
+            const columnCtx = document.getElementById('columnChart').getContext('2d');
+            columnChartInstance = new Chart(columnCtx, {
+                type: 'bar', // 'bar' is used for column charts in Chart.js
+                data: {
+                    labels: columnLabels,
+                    datasets: [{
+                        label: 'Total Estimated Loss (Millions $)',
+                        data: columnData,
+                        backgroundColor: colors.barColor,
+                        borderColor: colors.barColor.replace('0.8', '1'), // Make border opaque
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Estimated Loss (Millions $)', color: colors.labelColor },
+                            ticks: { color: colors.labelColor },
+                            grid: { color: colors.gridColor }
+                        },
+                        x: {
+                             title: { display: true, text: 'Year', color: colors.labelColor },
+                             ticks: { color: colors.labelColor },
+                             grid: { color: colors.gridColor }
+                        }
+                    },
+                     plugins: {
+                         title: { display: false }, // Already have H2
+                         legend: { display: false },
+                         tooltip: {
+                            backgroundColor: colors.tooltipBg,
+                            titleColor: colors.tooltipText,
+                            bodyColor: colors.tooltipText,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) {
+                                         // Add 'M' for millions
+                                        label += '$' + context.parsed.y.toFixed(2) + 'M';
+                                    }
+                                    return label;
+                                }
+                            }
+                         }
+                     }
+                }
+            });
+
+            // --- Chart 2: Bar Timeline (Loss vs Title, ordered by Year) ---
+             const sortedDataForTimeline = [...allData].sort((a, b) => (a.year || 0) - (b.year || 0));
+             const timelineLabels = sortedDataForTimeline.map(item => `${item.title} (${item.year})`);
+             const timelineData = sortedDataForTimeline.map(item => item.estimatedLoss);
+
+             const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+             timelineChartInstance = new Chart(timelineCtx, {
+                 type: 'bar',
+                 data: {
+                     labels: timelineLabels,
+                     datasets: [{
+                         label: 'Estimated Loss (Millions $)',
+                         data: timelineData,
+                         backgroundColor: colors.barColor,
+                         borderColor: colors.barColor.replace('0.8', '1'),
+                         borderWidth: 1
+                     }]
+                 },
+                 options: {
+                     indexAxis: 'y', // Makes it a horizontal bar chart
+                     responsive: true,
+                     maintainAspectRatio: false,
+                     scales: {
+                         x: {
+                             beginAtZero: true,
+                             title: { display: true, text: 'Estimated Loss (Millions $)', color: colors.labelColor },
+                             ticks: { color: colors.labelColor },
+                             grid: { color: colors.gridColor }
+                         },
+                         y: {
+                            ticks: { color: colors.labelColor, autoSkip: false, font: { size: 10 } }, // Show all labels, smaller font
+                            grid: { display: false } // Hide vertical grid lines for clarity
+                         }
+                     },
+                     plugins: {
+                        title: { display: false }, // Already have H2
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: colors.tooltipBg,
+                            titleColor: colors.tooltipText,
+                            bodyColor: colors.tooltipText,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.x !== null) {
+                                         // Add 'M' for millions
+                                        label += '$' + context.parsed.x.toFixed(2) + 'M';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                     }
+                 }
+             });
+
+
+            // --- Chart 3: Pie Chart (Losses by Initiative Focus) ---
+            const focusLosses = allData.reduce((acc, item) => {
+                if (item.estimatedLoss > 0) {
+                    const focus = item.relatedInitiativeFocus || 'Unspecified';
+                     // Optional: Normalize focus names (e.g., lowercase)
+                    const normalizedFocus = focus.trim().toLowerCase();
+                    acc[normalizedFocus] = (acc[normalizedFocus] || 0) + item.estimatedLoss;
+                }
+                return acc;
+            }, {});
+
+             // Capitalize first letter for display labels
+             const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+             const pieLabels = Object.keys(focusLosses).map(capitalize);
+             const pieData = Object.values(focusLosses);
+
+             const pieCtx = document.getElementById('pieChart').getContext('2d');
+             pieChartInstance = new Chart(pieCtx, {
+                 type: 'pie',
+                 data: {
+                     labels: pieLabels,
+                     datasets: [{
+                         label: 'Total Estimated Loss by Focus',
+                         data: pieData,
+                         backgroundColor: colors.pieColors, // Use the palette
+                         borderColor: colors.pieColors.map(c => c.replace('0.8', '1')), // Make border opaque
+                         borderWidth: 1
+                     }]
+                 },
+                 options: {
+                     responsive: true,
+                     maintainAspectRatio: false,
+                     plugins: {
+                         title: { display: false }, // Already have H2
+                         legend: {
+                             position: 'top', // Or 'bottom', 'left', 'right'
+                             labels: { color: colors.labelColor }
+                         },
+                         tooltip: {
+                            backgroundColor: colors.tooltipBg,
+                            titleColor: colors.tooltipText,
+                            bodyColor: colors.tooltipText,
+                             callbacks: {
+                                 label: function(context) {
+                                     let label = context.label || '';
+                                     if (label) { label += ': '; }
+                                     if (context.parsed !== null) {
+                                         // Add 'M' for millions and calculate percentage
+                                         const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                         const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                         label += '$' + context.parsed.toFixed(2) + 'M (' + percentage + '%)';
+                                     }
+                                     return label;
+                                 }
+                             }
+                         }
+                     }
+                 }
+             });
+        }
+
+        // --- Dark Mode Logic ---
+        function applyDarkMode(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.textContent = 'Light Mode';
+            } else {
+                document.body.classList.remove('dark-mode');
+                darkModeToggle.textContent = 'Dark Mode';
+            }
+            // Re-render charts with updated colors
+             createOrUpdateCharts();
+        }
+
+        darkModeToggle.addEventListener('click', () => {
+            const isDarkModeEnabled = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', isDarkModeEnabled ? 'enabled' : 'disabled');
+            applyDarkMode(isDarkModeEnabled); // Apply changes and re-render charts
+        });
+
+        // Check initial dark mode preference on load
+         const savedMode = localStorage.getItem('darkMode');
+         applyDarkMode(savedMode === 'enabled');
+
+
+        // --- Initial Data Fetch ---
+        async function fetchData() {
+            try {
+                const response = await fetch(CSV_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const csvText = await response.text();
+                const data = parseCSV(csvText);
+                processAndDisplayData(data);
+            } catch (error) {
+                console.error('Error fetching or parsing data:', error);
+                messageEl.innerHTML = `<p>Error loading data: ${error.message}. Please check the console or try again later.</p>`;
+                 messageEl.style.color = 'red'; // Make error message prominent
+                 // Optionally hide chart containers on error
+                 document.querySelectorAll('.chart-container').forEach(c => c.style.display = 'none');
+                 document.getElementById('dataTableContainer').style.display = 'none'; // Hide table too
+                 document.querySelectorAll('h2').forEach(h => h.style.display = 'none'); // Hide chart titles
+            }
+        }
+
+        // Fetch data when the page is loaded
+        document.addEventListener('DOMContentLoaded', fetchData);
+
+    </script>
 </body>
 </html>
