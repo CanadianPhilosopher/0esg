@@ -164,6 +164,156 @@
             color: var(--text-color);
         }
 
+        
+        /* Form Styling */
+        #formContainer {
+             transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group.full-width {
+             grid-column: 1 / -1; /* Span full width */
+        }
+         .form-group.submit-group {
+            flex-direction: row;
+            align-items: center;
+            margin-top: 10px;
+         }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1em;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+         .form-group small {
+             font-size: 0.8em;
+             color: #888;
+             margin-top: 3px;
+         }
+         body.dark-mode .form-group small {
+             color: #aaa;
+         }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--link-color);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Example focus */
+        }
+         body.dark-mode .form-group input:focus,
+         body.dark-mode .form-group select:focus,
+         body.dark-mode .form-group textarea:focus {
+            box-shadow: 0 0 0 2px rgba(100, 181, 246, 0.25); /* Dark mode focus */
+        }
+
+
+        #submitBtn {
+            padding: 10px 20px;
+            background-color: var(--link-color);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease, opacity 0.2s ease;
+        }
+        #submitBtn:hover {
+            opacity: 0.9;
+        }
+        #submitBtn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+         body.dark-mode #submitBtn:disabled {
+             background-color: #555;
+         }
+
+        #formMessage {
+            font-style: italic;
+        }
+        #formMessage.success {
+            color: #28a745;
+        }
+         body.dark-mode #formMessage.success {
+             color: #77dd77;
+         }
+        #formMessage.error {
+            color: #dc3545;
+        }
+        body.dark-mode #formMessage.error {
+             color: #ff6961;
+         }
+
+
+        /* Thank You Overlay & Sparkles */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-radius: 8px; /* Match container */
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 100; /* Above form elements */
+        }
+         body.dark-mode .overlay {
+             background-color: rgba(255, 255, 255, 0.7);
+         }
+
+        .overlay.hidden {
+            opacity: 0;
+            pointer-events: none; /* Don't block interaction when hidden */
+        }
+
+        .overlay .sparkles {
+            font-size: 2.5em; /* Make sparkles large */
+            color: #ffd700; /* Gold color */
+            animation: sparkle 1s ease-in-out infinite;
+            margin-bottom: 15px;
+        }
+         .overlay p {
+             font-size: 1.2em;
+             color: #fff; /* White text on dark overlay */
+             font-weight: bold;
+         }
+          body.dark-mode .overlay p {
+              color: #333; /* Dark text on light overlay */
+          }
+
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+        
     </style>
 </head>
 <body>
@@ -194,6 +344,77 @@
             <canvas id="pieChart"></canvas>
         </div>
 
+        <!-- ... (Previous Charts) ... -->
+        <h2>Submit New Data Entry</h2>
+        <div id="formContainer" style="position: relative; border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 30px; background-color: var(--bg-color);">
+            <form id="dataForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="title">Title:</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="industry">Industry:</label>
+                        <select id="industry" name="industry" required>
+                            <option value="">-- Select Industry --</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Video Games">Video Games</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="year">Year:</label>
+                        <input type="number" id="year" name="year" min="1980" max="2099" step="1" required>
+                    </div>
+                     <div class="form-group">
+                        <label for="type">Type:</label>
+                         <select id="type" name="type" required>
+                             <option value="">-- Select Type --</option>
+                             <option value="Movie">Movie</option>
+                             <option value="TV Show">TV Show</option>
+                             <option value="Video Game">Video Game</option>
+                             <option value="Company Initiative">Company Initiative</option>
+                             <option value="Product Launch">Product Launch</option>
+                             <option value="Other">Other</option>
+                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="estimatedLoss">Estimated Loss (Millions $, e.g., 150):</label>
+                        <input type="text" id="estimatedLoss" name="estimatedLoss" pattern="^\$?\d+(\.\d+)?M?$" placeholder="e.g., 150 or $150M" required>
+                         <small>Enter number only, 'M' is optional.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="relatedInitiativeFocus">Related Initiative Focus:</label>
+                         <select id="relatedInitiativeFocus" name="relatedInitiativeFocus" required>
+                             <option value="">-- Select Focus --</option>
+                             <option value="DEI">DEI</option>
+                             <option value="ESG">ESG</option>
+                             <option value="Woke Messaging">Woke Messaging</option>
+                             <option value="Combination">Combination</option>
+                             <option value="Unspecified">Unspecified</option>
+                             <option value="Other">Other</option>
+                         </select>
+                    </div>
+                </div>
+                 <div class="form-group full-width">
+                    <label for="description">Description (Optional):</label>
+                    <textarea id="description" name="description" rows="3"></textarea>
+                </div>
+
+                <div class="form-group full-width submit-group">
+                    <button type="submit" id="submitBtn">Submit Data</button>
+                    <span id="formMessage" style="margin-left: 15px;"></span>
+                </div>
+            </form>
+
+             <!-- Thank You Message & Sparkles Container -->
+             <div id="thankYouOverlay" class="overlay hidden">
+                 <div class="sparkles">✨ Thank You! ✨</div>
+                 <p>Data submitted successfully.</p>
+             </div>
+        </div>
+        <!-- ... (Raw Data Table) ... -->
+        
         <h2>Raw Data</h2>
         <div id="dataTableContainer">
             <table id="dataTable">
@@ -214,12 +435,24 @@
 
     <script>
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQw438ZKd6BpMMD7KRjyQI9xTjS467yFxecgkQOE3SOaTJx60w-TZnSxfbIuypkfLX1LjZcwf3xcU_/pub?gid=0&single=true&output=csv';
-
+        
+        // *** PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ***
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysKP1fwbXcL77dwprpIUJSrurU1CUfvQmbcJakhLkVawgpI_46fCy6dPGV4Lx0nupZ/exec'; // Replace with your actual URL
+        
         // DOM Elements
         const messageEl = document.getElementById('message');
         const tableHeaderEl = document.getElementById('tableHeader');
         const tableBodyEl = document.getElementById('tableBody');
         const darkModeToggle = document.getElementById('darkModeToggle');
+        // ... (Existing DOM Elements like messageEl, etc.) ...
+        // Data form variables
+        const dataForm = document.getElementById('dataForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const formMessage = document.getElementById('formMessage');
+        const thankYouOverlay = document.getElementById('thankYouOverlay');
+        const industrySelect = document.getElementById('industry');
+        const typeSelect = document.getElementById('type');
+        const focusSelect = document.getElementById('relatedInitiativeFocus');
 
         // Chart instances (global to manage updates/destruction)
         let columnChartInstance = null;
@@ -588,8 +821,130 @@
             }
         }
 
+        // FORM SUBMISSION FUNCTIONS
+        // --- Helper: Show Thank You Overlay ---
+        function showConfirmation() {
+            thankYouOverlay.classList.remove('hidden');
+            // Hide after a short duration
+            setTimeout(() => {
+                thankYouOverlay.classList.add('hidden');
+            }, 2500); // Show for 2.5 seconds
+        }
+
+        // --- Form Submission Logic ---
+        async function handleFormSubmit(event) {
+            event.preventDefault(); // Stop standard form submission
+
+            if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_GOES_HERE') {
+                formMessage.textContent = 'Error: Apps Script URL not configured.';
+                formMessage.className = 'error';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            formMessage.textContent = 'Submitting...';
+            formMessage.className = ''; // Clear previous status class
+
+            // Construct data object from form
+            const formData = new FormData(dataForm);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            // Basic cleanup for estimatedLoss before sending
+            if (data.estimatedLoss) {
+                data.estimatedLoss = String(data.estimatedLoss).replace(/[\$,M]/gi, '').trim();
+            }
+
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'cors', // Required for cross-origin requests (even though it's Google)
+                     // IMPORTANT: Apps Script doPost expects the payload differently depending on Content-Type
+                     // Sending as plain text allows easier parsing in Apps Script via e.postData.contents
+                    headers: {
+                         'Content-Type': 'text/plain;charset=utf-8', // Send as plain text JSON string
+                    },
+                    body: JSON.stringify(data) // Send the data object as a JSON string
+                });
+
+                 // Check if response is OK (status 200-299)
+                 if (!response.ok) {
+                     // Try to parse error from Apps Script if available, otherwise use status text
+                     let errorMsg = `HTTP error! Status: ${response.status} ${response.statusText}`;
+                     try {
+                         const errorJson = await response.json();
+                         if (errorJson && errorJson.message) {
+                           errorMsg = errorJson.message; // Use message from Apps Script response
+                         }
+                     } catch (e) { /* Ignore if response isn't JSON */ }
+                     throw new Error(errorMsg);
+                 }
+
+
+                const result = await response.json(); // Parse the JSON response from Apps Script
+
+                if (result.status === "success") {
+                    formMessage.textContent = 'Success!';
+                    formMessage.className = 'success';
+                    dataForm.reset(); // Clear the form fields
+                    showConfirmation(); // Show sparkles and Thank You
+
+                    // Optional: Immediately refresh data (can be slow) or add row locally
+                    // Option 1: Refetch all data (simplest for consistency)
+                    console.log("Data added (ID:", result.addedId, "), refreshing data...");
+                    fetchData(); // Re-run the initial data fetch and chart update
+
+                    // Option 2: Add locally (faster but might mismatch if sheet edited elsewhere)
+                    /*
+                    const newEntry = { ...data, id: result.addedId };
+                    // Ensure numeric types are correct if needed
+                    newEntry.year = parseInt(newEntry.year, 10);
+                    newEntry.estimatedLoss = parseFloat(newEntry.estimatedLoss);
+                    allData.push(newEntry);
+                    populateTable(allData); // Update table
+                    createOrUpdateCharts(); // Update charts
+                    */
+
+                } else {
+                    // Handle errors reported by the Apps Script logic
+                    throw new Error(result.message || 'An unknown error occurred during submission.');
+                }
+
+            } catch (error) {
+                console.error('Submission Error:', error);
+                formMessage.textContent = `Error: ${error.message}`;
+                formMessage.className = 'error';
+            } finally {
+                submitBtn.disabled = false; // Re-enable button
+                 // Clear status message after a few seconds unless it was success
+                 if (!formMessage.classList.contains('success')) {
+                     setTimeout(() => { formMessage.textContent = ''; formMessage.className = ''; }, 5000);
+                 }
+            }
+        }
+
+
+        // --- Event Listeners ---
+        // ... (Existing darkModeToggle listener) ...
+
+        // Add listener for the new form
+        if (dataForm) {
+            dataForm.addEventListener('submit', handleFormSubmit);
+        } else {
+             console.error("Could not find data form element (#dataForm)");
+        }
+        
         // Fetch data when the page is loaded
         document.addEventListener('DOMContentLoaded', fetchData);
+        // --- Initial Data Fetch ---
+        // ... (Existing fetchData function and initial call) ...
+        document.addEventListener('DOMContentLoaded', () => {
+             fetchData();
+             // Any other initialization
+        });
 
     </script>
 </body>
