@@ -36,6 +36,8 @@
         :tags="['Data']"
       />
 
+      <EventList />
+
     </main>
   </div>
 </template>
@@ -45,6 +47,7 @@ import AppHeader from './components/AppHeader.vue';
 import ContentCard from './components/ContentCard.vue';
 
 // Data for cards could be fetched or defined here if more complex
+import EventList from './components/EventList.vue'; // Adjust path if needed
 </script>
 
 <style>
