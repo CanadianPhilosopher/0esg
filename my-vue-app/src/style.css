@@ -1,79 +1,255 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* ==========================================================================
+   1. Base Styles & Variables (Light Mode Default)
+   ========================================================================== */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-.card {
-  padding: 2em;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+   :root {
+    /* Font */
+    --font-family-sans: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    --line-height-base: 1.6;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+  
+    /* Spacing */
+    --space-xs: 0.25rem;  /* 4px */
+    --space-sm: 0.5rem;   /* 8px */
+    --space-md: 1rem;     /* 16px */
+    --space-lg: 1.5rem;   /* 24px */
+    --space-xl: 2rem;     /* 32px */
+  
+    /* Borders */
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-width: 1px;
+  
+    /* Transitions */
+    --transition-base: all 0.2s ease-in-out;
+  
+    /* === Light Theme Colors (Default) === */
+    --color-text: #213547;                /* Teks gelap */
+    --color-text-muted: #555;
+    --color-background: #ffffff;           /* Latar putih */
+    --color-background-alt: #f8f8f8;
+    --color-primary: #646cff;             /* Biru terang (link) */
+    --color-primary-hover: #535bf2;
+    --color-secondary: #EAB308;           /* Kuning (button, tag) */
+    --color-secondary-hover: #ec971f;
+    --color-secondary-text: #fff;          /* Teks untuk bg kuning */
+    --color-accent: #14B8A6;              /* Teal (title) */
+    --color-accent-text: #1E40AF;          /* Biru tua (title text) */
+    --color-border: #eee;
+    --color-border-card: #f0e68c;
+    --color-shadow: rgba(0, 0, 0, 0.05);
+    --color-link: var(--color-primary);
+    --color-link-hover: var(--color-primary-hover);
+    --color-placeholder-text: #aaa;
+    --color-placeholder-bg: #f9f9f9;
+    --color-placeholder-border: #ccc;
+    --color-tag-text: #444;               /* Teks tag untuk bg kuning */
+    --color-action-icon: #777;
+    --color-action-icon-hover: #1E40AF;   /* Hover biru tua */
+    --color-header-icon: #555;
+    --color-header-icon-hover: #000;
+  
+    color-scheme: light; /* Default scheme */
+  
+    /* Basic Setup */
+    font-family: var(--font-family-sans);
+    line-height: var(--line-height-base);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-text);
+    background-color: var(--color-background);
+  
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  a:hover {
-    color: #747bff;
+  
+  /* === Dark Theme Variable Overrides === */
+  html.dark {
+    --color-text: rgba(255, 255, 255, 0.87); /* Teks terang */
+    --color-text-muted: #aaa;
+    --color-background: #242424;           /* Latar gelap */
+    --color-background-alt: #333;
+    --color-primary: #7a7fff;             /* Biru lebih terang */
+    --color-primary-hover: #9194ff;
+    --color-secondary: #EAB308;           /* Kuning tetap sama */
+    --color-secondary-hover: #d4a107;
+    --color-secondary-text: #222;          /* Teks gelap untuk bg kuning */
+    --color-accent: #14B8A6;              /* Teal tetap sama */
+    --color-accent-text: #cddcff;          /* Teks terang untuk bg teal */
+    --color-border: #ffffff;
+    --color-border-card: #a89a3e;         /* Border kartu lebih gelap */
+    --color-shadow: rgba(0, 0, 0, 0.2);
+    --color-link: var(--color-primary);
+    --color-link-hover: var(--color-primary-hover);
+    --color-placeholder-text: #777;
+    --color-placeholder-bg: #444;
+    --color-placeholder-border: #666;
+    --color-tag-text: #eee;               /* Teks terang untuk bg kuning */
+    --color-action-icon: #aaa;
+    --color-action-icon-hover: #cddcff;   /* Hover terang */
+    --color-header-icon: #aaa;
+    --color-header-icon-hover: #fff;
+    color-scheme: dark;
   }
-  button {
-    background-color: #f9f9f9;
+  
+  /* Global Reset (Sama seperti sebelumnya) */
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background-color: var(--color-background); }
+  a { font-weight: var(--font-weight-medium); color: var(--color-link); text-decoration: none; transition: var(--transition-base); }
+  a:hover { color: var(--color-link-hover); text-decoration: underline; }
+  h1, h2, h3, h4, h5, h6 { line-height: 1.2; margin-top: 0; margin-bottom: var(--space-md); color: var(--color-text); }
+  h1 { font-size: 2.5rem; } h2 { font-size: 2rem; } h3 { font-size: 1.75rem; }
+  p { margin-top: 0; margin-bottom: var(--space-md); text-align: justify;  }
+  img, svg { max-width: 100%; height: auto; display: block; }
+  button { margin: 0; padding: 0; border: none; background: none; font: inherit; color: inherit; cursor: pointer; text-align: center; }
+  button:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+  button:disabled { cursor: not-allowed; opacity: 0.6; }
+  
+  /* ==========================================================================
+     2. Layout Styles (Gunakan Variabel)
+     ========================================================================== */
+  
+  #app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
-}
+  
+  .main-content {
+    flex-grow: 1;
+    padding: var(--space-lg) var(--space-xl);
+    width: 100%;
+    max-width: 1280px; /* Opsional: batasi lebar konten */
+    margin: 0 auto;    /* Tengahkan jika max-width aktif */
+  }
+  
+  /* ==========================================================================
+     3. Component Styles (Gunakan Variabel)
+     ========================================================================== */
+  
+  /* --- App Header --- */
+  .app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) var(--space-xl);
+    background-color: var(--color-background-alt);
+    border-bottom: var(--border-width) solid var(--color-border);
+    color: var(--color-text);
+    gap: var(--space-md);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .logo-image { height: 35px; width: auto; }
+  .navigation { display: flex; flex-grow: 1; justify-content: center; align-items: center; gap: var(--space-md); flex-wrap: nowrap; overflow-x: auto; }
+  .icon-button {
+      padding: var(--space-sm);
+      color: var(--color-header-icon); /* Pakai variabel header icon */
+      line-height: 0; border-radius: 50%;
+      transition: var(--transition-base); flex-shrink: 0;
+  }
+  .icon-button img { height: 1.5em; width: auto; }
+  .icon-button:hover {
+      color: var(--color-header-icon-hover); /* Pakai variabel header icon hover */
+      background-color: var(--color-border); /* Latar belakang tetap sama */
+  }
+  .login-button {
+      padding: var(--space-sm) var(--space-md);
+      background-color: var(--color-secondary);
+      border-radius: var(--border-radius-sm);
+      color: var(--color-secondary-text); /* Teks tombol pakai variabel */
+      font-weight: var(--font-weight-bold);
+      transition: var(--transition-base);
+      white-space: nowrap; flex-shrink: 0;
+  }
+  .login-button:hover { background-color: var(--color-secondary-hover); }
+  
+  /* --- Content Card --- */
+  .content-card {
+      background-color: var(--color-background); /* Latar kartu pakai warna dasar tema */
+      border: var(--border-width) solid var(--color-border-card);
+      border-radius: var(--border-radius-md);
+      margin-bottom: var(--space-lg);
+      padding: var(--space-lg);
+      box-shadow: 0 2px 4px var(--color-shadow);
+      display: flex; flex-direction: column; gap: var(--space-md);
+  }
+  .card-source { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.9em; color: var(--color-text-muted); }
+  .source-icon { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+  .source-name { font-weight: var(--font-weight-bold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-title-bar {
+      background-color: var(--color-accent);
+      color: var(--color-accent-text); /* Teks title pakai variabel */
+      padding: var(--space-sm) var(--space-md);
+      font-weight: var(--font-weight-bold);
+      border-radius: var(--border-radius-sm);
+      font-size: 1.3em; text-align: center; line-height: 1.4;
+  }
+  .card-content { color: var(--color-text); font-size: 1em; min-height: 50px; }
+  .card-content p:last-child { margin-bottom: 0; }
+  .chart-placeholder {
+      border: var(--border-width) dashed var(--color-placeholder-border);
+      padding: var(--space-lg); text-align: center;
+      color: var(--color-placeholder-text);
+      min-height: 150px; display: flex; align-items: center; justify-content: center;
+      background-color: var(--color-placeholder-bg);
+      border-radius: var(--border-radius-sm); font-size: 0.9em;
+  }
+  .card-footer { /* Gabungkan tags & actions */
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: var(--space-md);
+      border-top: var(--border-width) solid var(--color-border);
+      padding-top: var(--space-md); margin-top: var(--space-sm);
+      gap: var(--space-md);
+  }
+ 
+  .tag {
+      background-color: var(--color-secondary);
+      color: var(--color-tag-text); /* Teks tag pakai variabel */
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--border-radius-lg);
+      font-size: 0.85em; font-weight: var(--font-weight-medium); white-space: nowrap;
+  }
+ 
+  .action-icon {
+      padding: var(--space-xs);
+      color: var(--color-action-icon); /* Icon action pakai variabel */
+      line-height: 0; border-radius: var(--border-radius-sm);
+      transition: var(--transition-base);
+  }
+  .action-icon img { height: 1.3em; width: auto; }
+  .action-icon:hover {
+      color: var(--color-action-icon-hover); /* Hover icon pakai variabel */
+      background-color: var(--color-background-alt);
+  }
+  
+  
+  /* ==========================================================================
+     4. Responsiveness (Sama seperti sebelumnya, tidak perlu diubah)
+     ========================================================================== */
+  @media (max-width: 1024px) {
+    :root { /* font-size: 95%; */ }
+    .main-content { padding: var(--space-lg); }
+  }
+  @media (max-width: 768px) {
+    h1 { font-size: 2rem; } h2 { font-size: 1.75rem; } h3 { font-size: 1.5rem; }
+    .app-header { padding: var(--space-sm) var(--space-md); gap: var(--space-sm); }
+    .navigation { gap: var(--space-sm); justify-content: flex-start; }
+    .icon-button img { height: 1.3em; }
+    .login-button { padding: var(--space-xs) var(--space-sm); font-size: 0.9em; }
+    .content-card { padding: var(--space-md); gap: var(--space-sm); }
+    .card-title-bar { font-size: 1.1em; }
+    .card-footer { flex-direction: column; align-items: flex-start; }
+  }
+  @media (max-width: 480px) {
+    :root { font-size: 90%; }
+    .main-content { padding: var(--space-md) var(--space-sm); }
+    .logo-image { height: 30px; }
+    .content-card { padding: var(--space-sm); }
+    /* Sembunyikan ikon jika perlu */
+    /* .navigation .icon-button[aria-label="Data"],
+    .navigation .icon-button[aria-label="Write"] { display: none; } */
+  }
