@@ -105,11 +105,11 @@ async function handleSubmit() {
 
   try {
     // 1. Get User ID (ensure user is logged in - handled by route guard later)
-    const { profile, error: profileError } = await getUserProfile();
+   /* const { profile, error: profileError } = await getUserProfile();
     if (profileError || !profile) {
       throw new Error(profileError?.message || 'You must be logged in to submit data.');
     }
-    const userId = profile.id;
+    const userId = profile.id;*/
 
     // 2. Prepare data for Supabase (Map form fields to table columns)
     //    NOTE: Adjust column names and data types as per your 'anti_consumer_event' table schema
@@ -121,9 +121,9 @@ async function handleSubmit() {
       // industry: formData.industry, // Add if column exists
       // type: formData.type, // Add if column exists
       // related_initiative: formData.relatedInitiative, // Add if column exists
-      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag), // Store tags as array if column type is text[]
+      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag), 
       event_description: formData.description,
-      user_id: userId // Link the event to the user who submitted it
+      //user_id: userId // Link the event to the user who submitted it
       // product: ??? // Need to determine where 'product' comes from if needed for EventList display
     };
 

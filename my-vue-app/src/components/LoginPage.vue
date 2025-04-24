@@ -66,8 +66,11 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
+import { useRouter } from 'vue-router'; // Import useRouter
 import { signUpWithProfile, signIn, getUserProfile } from '../library/auth';
 import Notification from '../components/Notification.vue'
+
+const router = useRouter(); // Initialize router
 
 const loginForm = reactive({
   email: '',
@@ -119,20 +122,30 @@ async function handleLogin() {
   const { data, error } = await signIn(loginForm.email, loginForm.password);
 
   if (error) {
-    showNotification(`Login failed: ${error.message}`, 'error')
+    // Handle specific error for unconfirmed email
+    if (error.message.includes('Email not confirmed')) {
+       showNotification('Login failed: Please confirm your email address first.', 'error');
+    } else {
+       showNotification(`Login failed: ${error.message}`, 'error');
+    }
   } else {
-    showNotification('Login successful!', 'success');
-  
-  const { profile, error: profileError } = await getUserProfile();
+    // Login successful, fetch profile to confirm everything is okay
+    const { profile, error: profileError } = await getUserProfile();
 
-  if (profileError) {
-    showNotification(`Failed to load profile: ${profileError.message}`);
-  } else {
-    console.log('Logged in as:', profile.username);
-    showNotification(`Welcome ${profile.first_name || profile.username}!`);
- }
+    if (profileError) {
+      // Even if login succeeded, profile fetch failed - might indicate an issue
+      // e.g., user exists in auth but not in profiles table
+      showNotification(`Login succeeded but failed to load profile: ${profileError.message}. Please contact support.`, 'error');
+      // Decide if you still want to redirect or handle this differently
+      // For now, we won't redirect if the profile is missing/errored
+    } else {
+      console.log('Logged in as:', profile.username);
+      showNotification(`Welcome ${profile.first_name || profile.username}! Redirecting...`, 'success');
+      // Redirect to Home page after successful login and profile fetch
+      setTimeout(() => {
+         router.push({ name: 'Home' }); // Assuming you have a route named 'Home' in src/router.js
+      }, 1500); // Short delay to allow user to see the welcome message
+    }
   }
 }
 </script>
-
-
