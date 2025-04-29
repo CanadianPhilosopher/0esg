@@ -59,7 +59,7 @@
       :tags="['Data']"
     />
 
-    <EventList />
+    <!-- <EventList /> --> <!-- Commented out as component is not resolved -->
   </div>
 </template>
 
@@ -110,15 +110,19 @@ async function fetchEvents() {
       throw error;
     }
 
+    console.log("Raw data from Supabase:", data); // Log raw data
+
     // If data fetching is successful, update the events ref
     events.value = data.map(item => ({
-      cardTitle: `${item.event_headline} (${item.product || 'General'})`,
+      cardTitle: `${item.event_headline || 'No Headline'} (${item.product || 'General'})`, // Added fallback for null headline
       cardSourceName: item.producer,
       cardTags: parseTags(item.tags),
       description: item.event_description,
       date: formatDate(item.date_happened),
       sourceLink: item.source1,
     }));
+
+    console.log("Mapped events array:", events.value); // Log mapped data
 
   } catch (error) {
     console.error("Error fetching events:", error.message);

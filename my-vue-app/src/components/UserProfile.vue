@@ -17,11 +17,11 @@
         </div>
         <div class="profile-item">
           <label>Email:</label>
-          <span>{{ userEmail }}</span> <!-- Email didapat terpisah dari auth -->
+          <span>{{ userEmail }}</span> 
         </div>
         <div class="profile-item">
           <label>First Name:</label>
-          <span>{{ profile.first_name || '-' }}</span> <!-- Tampilkan '-' jika kosong -->
+          <span>{{ profile.first_name || '-' }}</span> 
         </div>
         <div class="profile-item">
           <label>Last Name:</label>
@@ -46,8 +46,8 @@
   <script setup>
   import { useRouter } from 'vue-router';
   import { ref, onMounted } from 'vue';
-  import { supabase } from '../supabaseClient'; // Sesuaikan path jika perlu
-  import { getUserProfile } from '../library/auth'; // Gunakan fungsi yang sudah ada
+  import { supabase } from '../supabaseClient'; 
+  import { getUserProfile } from '../library/auth'; 
   
   const profile = ref(null);
   const userEmail = ref('');
@@ -57,7 +57,7 @@
   onMounted(async () => {
     loading.value = true;
     error.value = null;
-    profile.value = null; // Reset profile
+    profile.value = null; 
   
     try {
       // 1. Dapatkan sesi pengguna saat ini untuk email
@@ -75,8 +75,7 @@
       if (fetchedProfile) {
         profile.value = fetchedProfile;
       } else {
-        // Ini terjadi jika user ada di auth tapi tidak ada record di tabel profiles
-        // Anda bisa membuat profil default atau menampilkan pesan
+        
         profile.value = { username: 'N/A', first_name: '', last_name: '', phone_number: '', updated_at: null }; // Profil default minimal
         console.warn("Profile data not found for this user.");
         // error.value = "Profile details not found."; // Atau tampilkan error

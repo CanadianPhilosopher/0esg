@@ -69,6 +69,7 @@ import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router'; // Import useRouter
 import { signUpWithProfile, signIn, getUserProfile } from '../library/auth';
 import Notification from '../components/Notification.vue'
+import { supabase } from '../supabaseClient';
 
 const router = useRouter(); // Initialize router
 
@@ -114,7 +115,10 @@ async function handleSignup() {
   if (error) {
     showNotification(`Signup failed: ${error.message}`, 'error')
   } else {
-    showNotification('Signup successful! Check your email to confirm.', 'success')
+    showNotification('Signup successful! Check your email to confirm.', 'success');
+    setTimeout(() => {
+       router.push({ name: 'Home' }); 
+    }, 1500); 
   }
 }
 
@@ -122,30 +126,52 @@ async function handleLogin() {
   const { data, error } = await signIn(loginForm.email, loginForm.password);
 
   if (error) {
-    // Handle specific error for unconfirmed email
+   
     if (error.message.includes('Email not confirmed')) {
        showNotification('Login failed: Please confirm your email address first.', 'error');
     } else {
        showNotification(`Login failed: ${error.message}`, 'error');
     }
   } else {
-    // Login successful, fetch profile to confirm everything is okay
     const { profile, error: profileError } = await getUserProfile();
 
     if (profileError) {
-      // Even if login succeeded, profile fetch failed - might indicate an issue
-      // e.g., user exists in auth but not in profiles table
-      showNotification(`Login succeeded but failed to load profile: ${profileError.message}. Please contact support.`, 'error');
-      // Decide if you still want to redirect or handle this differently
-      // For now, we won't redirect if the profile is missing/errored
-    } else {
-      console.log('Logged in as:', profile.username);
-      showNotification(`Welcome ${profile.first_name || profile.username}! Redirecting...`, 'success');
-      // Redirect to Home page after successful login and profile fetch
-      setTimeout(() => {
-         router.push({ name: 'Home' }); // Assuming you have a route named 'Home' in src/router.js
-      }, 1500); // Short delay to allow user to see the welcome message
-    }
+      const { profile, error: profileError} = await getUserProfile();
+
+      if (profileError) {
+
+        const { data: { user }} = await supabase.auth.getUser();
+        if (user) {
+          const { error : insertError} = await supabase.from( 'users_profile').insert({
+          id: user.id,
+          email: user.email,
+          username: user.user_metadata.username,
+          first_name: user.user_metadata.fullName?.split(' ')[0] || '',
+          last_name: user.user_metadata.fullName?.split(' ')[1] || '',
+          phone_number: user.user_metadata.phoneNumber || '',
+          });
+          if (insertError) {
+            showNotification(`Login succeeded but failed to create profile: ${insertError.message}`, 'error');
+            return;
+          } else{
+            showNotification('Profile created. Welcome!', 'success');
+            // Redirect after profile creation
+            setTimeout(() => {
+              router.push({ name: 'Home' });
+            }, 1500);
+          }
+         } // Added missing closing brace for if(user)
+      } else {
+        // Profile already exists
+        console.log('Logged in as:', profile.username);
+        showNotification(`Welcome ${profile.first_name || profile.username}! Redirecting...`, 'success');
+        // Redirect after successful login with existing profile
+        setTimeout(() => {
+          router.push({ name: 'Home' });
+        }, 1500);
+      }
+      // Removed incorrect line: this.$route.name === 'Home';
+    } // Added missing closing brace for if(profileError) - outer one
   }
 }
 </script>

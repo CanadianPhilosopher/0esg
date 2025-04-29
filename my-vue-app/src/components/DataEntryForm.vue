@@ -21,6 +21,10 @@
         <input type="text" id="producer" v-model="formData.producer" required>
       </div>
       <div class="form-group">
+        <label for="producer">Publisher</label>
+        <input type="text" id="publisher" v-model="formData.publisher" required>
+      </div>
+      <div class="form-group">
         <label for="source">Source</label>
         <input type="text" id="source" v-model="formData.source" placeholder="https://..." required>
       </div>
@@ -77,6 +81,7 @@ const formData = reactive({
   title: '',
   year: new Date().getFullYear(), // Default to current year
   producer: '',
+  publisher: '',
   source: '',
   industry: '',
   type: '',
@@ -104,12 +109,15 @@ async function handleSubmit() {
   notification.message = ''; // Clear previous notifications
 
   try {
-    // 1. Get User ID (ensure user is logged in - handled by route guard later)
-   /* const { profile, error: profileError } = await getUserProfile();
-    if (profileError || !profile) {
-      throw new Error(profileError?.message || 'You must be logged in to submit data.');
+    // 1. Get User (ensure user is logged in)
+    const { user, profile, error: authError } = await getUserProfile(); // Destructure user, profile, and error
+
+    // Check if user is actually logged in
+    if (authError || !user) {
+      throw new Error(authError?.message || 'You must be logged in to submit data.');
     }
-    const userId = profile.id;*/
+    // We have the user, proceed using user.id
+    const userId = user.id;
 
     // 2. Prepare data for Supabase (Map form fields to table columns)
     //    NOTE: Adjust column names and data types as per your 'anti_consumer_event' table schema
@@ -117,26 +125,31 @@ async function handleSubmit() {
       event_headline: formData.title,
       date_happened: `${formData.year}-01-01`, // Assuming YYYY format, store as date start of year
       producer: formData.producer,
-      source1: formData.source, // Assuming source maps to source1
-      // industry: formData.industry, // Add if column exists
-      // type: formData.type, // Add if column exists
-      // related_initiative: formData.relatedInitiative, // Add if column exists
+      publisher: formData.publisher,
+      source1: formData.source, 
+      industry: formData.industry, 
+      type1: formData.type, 
+      associated_dossier: formData.relatedInitiative, 
       tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag), 
       event_description: formData.description,
-      //user_id: userId // Link the event to the user who submitted it
-      // product: ??? // Need to determine where 'product' comes from if needed for EventList display
+      user_id: userId 
+      
     };
+    console.log( 'Payload:', eventData);
 
-    // 3. Insert data into Supabase
-    const { error: insertError } = await supabase
+    // 3. Insert data into Supabase and select the inserted row (optional)
+    const { data, error: insertError } = await supabase
       .from('anti_consumer_event')
-      .insert([eventData]); // insert expects an array
+      .insert([eventData])
+      .select(); // Use .select() instead of deprecated returning option
 
     if (insertError) {
+      // Throw the error to be caught by the outer catch block
       throw insertError;
     }
 
-    // 4. Success: Show notification and redirect
+    // 4. Success: Show notification, clear form, and redirect
+    console.log('Inserted row:', data); // Log success
     showNotification('Data submitted successfully!', 'success');
     // Clear form (optional)
     Object.keys(formData).forEach(key => formData[key] = ''); // Reset form

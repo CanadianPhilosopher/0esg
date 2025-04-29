@@ -9,27 +9,18 @@ export async function signUpWithProfile(formData) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    phone: formData.phone, 
     options: {
         data: {
           full_name: `${formData.first_name} ${formData.last_name}`,
           username: formData.username,
-          phone_number: formData.phone_number
+          phoneNumber: formData.phone, 
         }
       }
   });
 
   if (error) return { error };
-
-  const userId = data.user.id;
-
-  const { error: profileError } = await supabase.from('users_profile').insert({
-    id: userId,
-    ...profile
-  });
-
-  if (profileError) return { error: profileError };
-
-  return { data };
+  return {data};
 }
 
 /**
@@ -48,17 +39,25 @@ export async function getUserProfile() {
     error
   } = await supabase.auth.getUser();
 
-  if (error) return { error };
+  // Return immediately if there's an error getting the user or if no user is found
+  if (error || !user) {
+    return { user: null, profile: null, error: error || new Error('User not found.') };
+  }
 
+  // User is authenticated, now try to get the profile
   const { data: profile, error: profileError } = await supabase
     .from('users_profile')
     .select('*')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
-  if (profileError) return { error: profileError };
+  // Return profile error if it occurs, but still include the user object
+  if (profileError) {
+    return { user, profile: null, error: profileError };
+  }
 
-  return { profile };
+  // Return user and profile (profile might be null if .maybeSingle() found nothing)
+  return { user, profile, error: null };
 }
 
 /**
