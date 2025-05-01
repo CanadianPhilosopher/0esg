@@ -17,6 +17,24 @@
         <input type="number" id="year" v-model="formData.year" placeholder="YYYY" required>
       </div>
       <div class="form-group">
+        <label for="country">Country</label>
+        <select
+          id="country"
+          v-model="formData.countryId"
+          :disabled="isReadonly"
+          required
+        >
+        <option disabled value="">Select a country</option>
+        <option v-for="country in reference.country" :key="country.id" :value="country.id">
+          {{ country.name }}
+        </option>
+         </select>
+      </div>
+      <div class="form-group">
+        <label for="product">Product</label>
+        <input type="text" id="product" v-model="formData.product" required>
+      </div>
+      <div class="form-group">
         <label for="producer">Producer</label>
         <input type="text" id="producer" v-model="formData.producer" required>
       </div>
@@ -28,28 +46,52 @@
         <label for="source">Source</label>
         <input type="text" id="source" v-model="formData.source" placeholder="https://..." required>
       </div>
-      <div class="form-group">
+      <div class="form-group" >
         <label for="industry">Industry</label>
-        <!-- Needs options populated -->
-        <select id="industry" v-model="formData.industry">
+        <select id="industry" v-model="formData.industry" @change="handleIndustryChange">
           <option disabled value="">Select Industry</option>
-          <!-- Add industry options here -->
+          <option value="video-game">Video Game</option>
+          <option value="entertainment">Entertainment</option>
+          <option value="education">Education</option>
+          <option value="other">Other (please specify)</option>
         </select>
+        <input 
+          v-if="formData.industry === 'other'" 
+          type="text" 
+          placeholder="Enter your industry" 
+          v-model="formData.customIndustry"
+          class="input-gap"
+        />
       </div>
        <div class="form-group">
         <label for="type">Type</label>
-         <!-- Needs options populated -->
-        <select id="type" v-model="formData.type">
+        <select id="type" v-model="formData.type" @change="handleTypeChange">
            <option disabled value="">Select Type</option>
-           <!-- Add type options here -->
+           <option value="1">Injection of Modern Day Subjects</option>
+           <option value="2">Destruction of Property</option>
+           <option value="3">Inclusion of Pronouns</option>
+           <option value="4">Sales Underperformance</option>
+           <option value="other">Other (please specify)</option>
         </select>
+        <input 
+          v-if="formData.type === 'other'" 
+          type="text" 
+          placeholder="Enter your type" 
+          v-model="formData.customType"
+          class="input-gap"
+        />
       </div>
        <div class="form-group">
-        <label for="related-initiative">Related Initiative Focus</label>
-         <!-- Needs options populated -->
-        <select id="related-initiative" v-model="formData.relatedInitiative">
+        <label for="related-initiative">Category</label>
+        <select id="related-initiative" v-model="formData.category" @change="handleCategoryChange">
            <option disabled value="">Select</option>
-           <!-- Add initiative options here -->
+          
+           <option value="1"> Escapism Disruption</option>
+           <option value="2">Criminal Behavior</option>
+           <option value="3">Overclaimed</option>
+           <option value="4">Data Right</option>
+           <option value="5">Marketing Blacklash</option>
+           <option value="other">Other (please specify)</option>
         </select>
       </div>
       <div class="form-group">
@@ -68,28 +110,58 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted} from 'vue';
 import { useRouter } from 'vue-router';
 import { supabase } from '../supabaseClient';
 import { getUserProfile } from '../library/auth';
-import Notification from './Notification.vue'; // Import Notification component
-
+import Notification from './Notification.vue'; 
 const router = useRouter();
 const isSubmitting = ref(false);
 
 const formData = reactive({
   title: '',
-  year: new Date().getFullYear(), // Default to current year
+  year: new Date().getFullYear(), 
   producer: '',
   publisher: '',
   source: '',
   industry: '',
+  customIndustry: '',
+  customType: '',
   type: '',
   relatedInitiative: '',
   tags: '',
-  description: ''
+  description: '',
+  countryId: '',
 });
+const reference = reactive({
+  country: []
+})
 
+const isReadonly = ref(false)
+
+onMounted(async () => {
+  const { data, error } = await supabase
+    .from('country')
+    .select('id, name')
+    .order('name')
+
+  if (error) {
+    console.error('Error fetching countries:', error.message)
+  } else {
+    reference.country = data
+  }
+})
+
+async function handleIndustryChange() {
+    if (this.formData.industry !== 'other') {
+      this.formData.customIndustry = '';
+  }
+}
+async function handleTypeChange() {
+    if (this.formData.type !== 'other') {
+      this.formData.customType = '';
+  }
+}
 const notification = reactive({
   message: '',
   type: 'success' // 'success' or 'error'
@@ -98,15 +170,16 @@ const notification = reactive({
 function showNotification(msg, type = 'success') {
   notification.message = msg;
   notification.type = type;
-  // Optionally clear notification after some time
+  
   setTimeout(() => {
     notification.message = '';
   }, 5000);
 }
 
+
 async function handleSubmit() {
   isSubmitting.value = true;
-  notification.message = ''; // Clear previous notifications
+  notification.message = 'Success'; 
 
   try {
     // 1. Get User (ensure user is logged in)
@@ -121,15 +194,25 @@ async function handleSubmit() {
 
     // 2. Prepare data for Supabase (Map form fields to table columns)
     //    NOTE: Adjust column names and data types as per your 'anti_consumer_event' table schema
+    function resolveField(value, customValue) {
+    return value === 'other' ? customValue : value;
+    }
+
+    const industryToSave = resolveField(formData.industry, formData.customIndustry);
+    const typeToSave = resolveField(formData.type, formData.customType);
+    const categoryToSave = resolveField(formData.category, formData.customCategory);
+
     const eventData = {
       event_headline: formData.title,
-      date_happened: `${formData.year}-01-01`, // Assuming YYYY format, store as date start of year
+      date_happened: formData.year, // Assuming YYYY format, store as date start of year
       producer: formData.producer,
+      product: formData.product,
       publisher: formData.publisher,
       source1: formData.source, 
-      industry: formData.industry, 
-      type1: formData.type, 
-      associated_dossier: formData.relatedInitiative, 
+      industry: industryToSave, 
+      type1: typeToSave, 
+      category_text: categoryToSave, 
+      country_id: formData.countryId,
       tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag), 
       event_description: formData.description,
       user_id: userId 

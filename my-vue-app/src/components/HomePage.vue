@@ -20,6 +20,11 @@
         :tags="event.cardTags"
         :source-link="event.sourceLink"
         :date="event.date"
+        :publisher="event.publisher"
+        :country="event.country"
+        :type="event.type"
+        :industry="event.industry"
+        :category="event.category"
       />
       <!-- Add other props from ContentCard as needed -->
     </div>
@@ -118,7 +123,12 @@ async function fetchEvents() {
       cardSourceName: item.producer,
       cardTags: parseTags(item.tags),
       description: item.event_description,
-      date: formatDate(item.date_happened),
+      industry: item.event_industry,
+      publisher: item.publisher,
+      category: item.category_text,
+      country:item.country,
+      type: item.type1,
+      date: `${formatDate(item.date_happened) || new Date().getFullYear()}`,
       sourceLink: item.source1,
     }));
 

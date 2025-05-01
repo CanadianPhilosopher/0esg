@@ -251,6 +251,9 @@
   .form-group {
     margin-bottom: var(--space-lg);
   }
+  .input-gap {
+    margin-top: var(--space-sm); /* or use 0.5rem, 8px, etc. */
+  }
   
   label {
     display: block;

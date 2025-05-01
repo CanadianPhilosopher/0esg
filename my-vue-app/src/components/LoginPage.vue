@@ -123,55 +123,49 @@ async function handleSignup() {
 }
 
 async function handleLogin() {
+  
   const { data, error } = await signIn(loginForm.email, loginForm.password);
 
   if (error) {
-   
     if (error.message.includes('Email not confirmed')) {
-       showNotification('Login failed: Please confirm your email address first.', 'error');
+      showNotification('Login failed: Please confirm your email address first.', 'error');
     } else {
-       showNotification(`Login failed: ${error.message}`, 'error');
+      showNotification(`Login failed: ${error.message}`, 'error');
+    }
+    return;
+  }
+
+  const { profile, error: profileError } = await getUserProfile();
+
+  if (profileError) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { error: insertError } = await supabase.from('users_profile').insert({
+        id: user.id,
+        email: user.email,
+        username: user.user_metadata.username,
+        first_name: user.user_metadata.fullName?.split(' ')[0] || '',
+        last_name: user.user_metadata.fullName?.split(' ')[1] || '',
+        phone_number: user.user_metadata.phoneNumber || '',
+      });
+
+      if (insertError) {
+        showNotification(`Login succeeded but failed to create profile: ${insertError.message}`, 'error');
+        return;
+      } else {
+        showNotification('Profile created. Welcome!', 'success');
+      }
+    } else {
+      showNotification('Login succeeded, but no user data found.', 'error');
+      return;
     }
   } else {
-    const { profile, error: profileError } = await getUserProfile();
-
-    if (profileError) {
-      const { profile, error: profileError} = await getUserProfile();
-
-      if (profileError) {
-
-        const { data: { user }} = await supabase.auth.getUser();
-        if (user) {
-          const { error : insertError} = await supabase.from( 'users_profile').insert({
-          id: user.id,
-          email: user.email,
-          username: user.user_metadata.username,
-          first_name: user.user_metadata.fullName?.split(' ')[0] || '',
-          last_name: user.user_metadata.fullName?.split(' ')[1] || '',
-          phone_number: user.user_metadata.phoneNumber || '',
-          });
-          if (insertError) {
-            showNotification(`Login succeeded but failed to create profile: ${insertError.message}`, 'error');
-            return;
-          } else{
-            showNotification('Profile created. Welcome!', 'success');
-            // Redirect after profile creation
-            setTimeout(() => {
-              router.push({ name: 'Home' });
-            }, 1500);
-          }
-         } // Added missing closing brace for if(user)
-      } else {
-        // Profile already exists
-        console.log('Logged in as:', profile.username);
-        showNotification(`Welcome ${profile.first_name || profile.username}! Redirecting...`, 'success');
-        // Redirect after successful login with existing profile
-        setTimeout(() => {
-          router.push({ name: 'Home' });
-        }, 1500);
-      }
-      // Removed incorrect line: this.$route.name === 'Home';
-    } // Added missing closing brace for if(profileError) - outer one
+    showNotification(`Welcome ${profile.first_name || profile.username}! Redirecting...`, 'success');
   }
+
+  setTimeout(() => {
+    router.push({ name: 'Home' });
+  }, 1500);
 }
+
 </script>

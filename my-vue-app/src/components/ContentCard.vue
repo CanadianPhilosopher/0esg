@@ -3,17 +3,17 @@
       <!-- Optional Source Header -->
       <div v-if="sourceName || sourceIcon" class="card-source">
          <img v-if="sourceIcon" :src="sourceIcon" alt="Source Icon" class="source-icon"/>
-         <!-- Wrap sourceName in a link if sourceLink is provided -->
-         <a v-if="sourceLink" :href="sourceLink" target="_blank" rel="noopener noreferrer" class="source-link">
-            <span v-if="sourceName" class="source-name">{{ sourceName }}</span>
-         </a>
-         <!-- Otherwise, just display the sourceName -->
-         <span v-else-if="sourceName" class="source-name">{{ sourceName }}</span>
+                
+          <span v-if="sourceName" class="source-name">{{ sourceName }}</span>
+ 
       </div>
   
       <!-- Card Title Bar -->
       <div class="card-title-bar">
+        <a v-if="sourceLink" :href="sourceLink" target="_blank" rel="noopener noreferrer" class="source-link">
         {{ title }}
+        </a>
+        <span v-else-if="title" class="card-title-bar">{{ title }}</span>
       </div>
   
       <!-- Card Content -->
@@ -32,7 +32,17 @@
           </div>
         </slot>
       </div>
-      
+
+      <div class="card-content">
+        <div class="card-content">
+          <p><strong>Publisher : </strong> {{ publisher }}</p>
+          <p><strong>Related Initiative:</strong> {{ category }}</p>
+          <p><strong>Industry:</strong> {{ industry }}</p>
+          <p><strong>Type:</strong> {{ type }}</p>
+          <p><strong>Country:</strong> {{ country }}</p>
+          <p><strong>Date:</strong> {{ date }}</p>
+        </div>
+      </div>
       <div class="footer-cards">
         <!-- Tags -->
          <span v-for="tag in tags" :key="tag" class="tag"> {{ tag }} </span>
@@ -60,6 +70,22 @@
         default: ''
     },
     textContent: {
+      type: String,
+      default: '',
+    },
+    type: {
+      type: String,
+      default: '',
+    },
+    country: {
+      type: String,
+      default: '',
+    },
+    publisher: {
+      type: String,
+      default: '',
+    },
+    date: {
       type: String,
       default: '',
     },
