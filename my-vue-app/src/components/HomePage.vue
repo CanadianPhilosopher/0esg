@@ -97,50 +97,77 @@ function parseTags(tagsData) {
   return [];
 }
 
+const typeLabels = {
+  1: 'Injection of Modern Day Subjects',
+  2: 'Destruction of Property',
+  3: 'Inclusion of Pronouns',
+  4: 'Sales Underperformance'
+};
+
+const industryLabels = {
+  1: 'Video Game',
+  2: 'Entertainment',
+  3: 'Education'
+};
+
+const categoryLabels = {
+  1: 'Escapism Disruption',
+  2: 'Criminal Behavior',
+  3: 'Overclaimed',
+  4: 'Data Right',
+  5: 'Marketing Backlash'
+};
+
+function formatLabel(value, labelMap) {
+  return labelMap[value] || value; // fallback to custom text or raw value
+}
+
+
+
+
 async function fetchEvents() {
   isLoading.value = true;
   errorMsg.value = null;
   try {
-    // Use the supabase client to fetch data
-    // .from('table_name') specifies the table
-    // .select('*') selects all columns
-    // You can specify columns like .select('id, product, event_headline')
     const { data, error } = await supabase
       .from('anti_consumer_event') // Your table name
-      .select('*')                 // Select all columns for now
+      .select(`
+          *,
+          country (
+            id,
+            name
+          )
+        `)               // Select all columns for now
       .order('created_at', { ascending: false }); // Optional: Order by creation date
 
     if (error) {
       // Throw the error to be caught by the catch block
       throw error;
     }
-
-    console.log("Raw data from Supabase:", data); // Log raw data
-
-    // If data fetching is successful, update the events ref
     events.value = data.map(item => ({
-      cardTitle: `${item.event_headline || 'No Headline'} (${item.product || 'General'})`, // Added fallback for null headline
+      cardTitle: `${item.event_headline || 'No Headline'} (${item.product || 'General'})`,
       cardSourceName: item.producer,
       cardTags: parseTags(item.tags),
       description: item.event_description,
-      industry: item.event_industry,
+      industry: formatLabel(item.industry, industryLabels),
       publisher: item.publisher,
-      category: item.category_text,
-      country:item.country,
-      type: item.type1,
+      category: formatLabel( item.category_text, categoryLabels),
+      //country: item.country || { name: 'Unknown' },
+      country: item.country?.name || 'Unknown',
+      type: formatLabel(item.type1, typeLabels),
+
       date: `${formatDate(item.date_happened) || new Date().getFullYear()}`,
       sourceLink: item.source1,
     }));
+    console.log("category_text example:", data[0]?.category_text);
 
-    console.log("Mapped events array:", events.value); // Log mapped data
-
-  } catch (error) {
+    console.log("Mapped events array:", events.value);
+   } catch (error) {
     console.error("Error fetching events:", error.message);
     errorMsg.value = `Failed to fetch events: ${error.message}`;
-  } finally {
-    // Set loading to false regardless of success or failure
+    } finally {
     isLoading.value = false;
-  }
+    } 
 }
 
 // Call fetchEvents when the component is first mounted

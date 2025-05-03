@@ -81,6 +81,14 @@
       type: String,
       default: '',
     },
+    category: {
+      type: String,
+      default: '',
+    },
+    industry: {
+      type: String,
+      default: '',
+    },
     publisher: {
       type: String,
       default: '',

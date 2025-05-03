@@ -94,6 +94,9 @@ const notificationType = ref('success');
 function showNotification(msg, type = 'success') {
   notificationMessage.value = msg;
   notificationType.value = type;
+  setTimeout(() => {
+    notificationMessage.value = '';
+  }, 3000);
 }
 
 
@@ -152,17 +155,13 @@ async function handleLogin() {
       if (insertError) {
         showNotification(`Login succeeded but failed to create profile: ${insertError.message}`, 'error');
         return;
-      } else {
-        showNotification('Profile created. Welcome!', 'success');
       }
     } else {
-      showNotification('Login succeeded, but no user data found.', 'error');
-      return;
+        showNotification('Login succeeded, but no user data found.', 'error');
+        return;
     }
-  } else {
-    showNotification(`Welcome ${profile.first_name || profile.username}! Redirecting...`, 'success');
   }
-
+  showNotification('Success! You have logged in.', 'success');
   setTimeout(() => {
     router.push({ name: 'Home' });
   }, 1500);

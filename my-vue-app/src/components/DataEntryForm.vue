@@ -50,9 +50,9 @@
         <label for="industry">Industry</label>
         <select id="industry" v-model="formData.industry" @change="handleIndustryChange">
           <option disabled value="">Select Industry</option>
-          <option value="video-game">Video Game</option>
-          <option value="entertainment">Entertainment</option>
-          <option value="education">Education</option>
+          <option v-for="option in industryOptions" :key="option.id" :value="option.id">
+            {{ option.label }}
+          </option>
           <option value="other">Other (please specify)</option>
         </select>
         <input 
@@ -66,12 +66,11 @@
        <div class="form-group">
         <label for="type">Type</label>
         <select id="type" v-model="formData.type" @change="handleTypeChange">
-           <option disabled value="">Select Type</option>
-           <option value="1">Injection of Modern Day Subjects</option>
-           <option value="2">Destruction of Property</option>
-           <option value="3">Inclusion of Pronouns</option>
-           <option value="4">Sales Underperformance</option>
-           <option value="other">Other (please specify)</option>
+          <option disabled value="">Select Type</option>
+          <option v-for="option in typeOptions" :key="option.id" :value="option.id">
+            {{ option.label }}
+          </option>
+          <option value="other">Other (please specify)</option>
         </select>
         <input 
           v-if="formData.type === 'other'" 
@@ -83,8 +82,8 @@
       </div>
        <div class="form-group">
         <label for="related-initiative">Category</label>
-        <select id="related-initiative" v-model="formData.category" @change="handleCategoryChange">
-           <option disabled value="">Select</option>
+        <!--<select id="related-initiative" v-model="formData.relatedInitiative" @change="handleCategoryChange">
+           <option disabled value="">Select Category</option>
           
            <option value="1"> Escapism Disruption</option>
            <option value="2">Criminal Behavior</option>
@@ -92,7 +91,22 @@
            <option value="4">Data Right</option>
            <option value="5">Marketing Blacklash</option>
            <option value="other">Other (please specify)</option>
+        </select>-->
+        <select id="related-initiative" v-model="formData.relatedInitiative" @change="handleCategoryChange">
+          <option disabled value="">Select Category</option>
+          <option v-for="option in categoryOptions" :key="option.id" :value="option.id">
+            {{ option.label }}
+          </option>
+          <option value="other">Other (please specify)</option>
         </select>
+
+        <input 
+          v-if="formData.relatedInitiative === 'other'" 
+          type="text" 
+          placeholder="Enter your type" 
+          v-model="formData.customCategory"
+          class="input-gap"
+        />
       </div>
       <div class="form-group">
         <label for="tags">Tags (comma-separated)</label>
@@ -117,7 +131,25 @@ import { getUserProfile } from '../library/auth';
 import Notification from './Notification.vue'; 
 const router = useRouter();
 const isSubmitting = ref(false);
+const typeOptions = [
+  { id: 1, label: 'Injection of Modern Day Subjects' },
+  { id: 2, label: 'Destruction of Property' },
+  { id: 3, label: 'Inclusion of Pronouns' },
+  { id: 4, label: 'Sales Underperformance' }
+];
+const industryOptions = [
+  { id: 1, label: 'Video Game' },
+  { id: 2, label: 'Entertainment' },
+  { id: 3, label: 'Education' }
+];
 
+const categoryOptions = [
+  { id: 1, label: 'Escapism Disruption' },
+  { id: 2, label: 'Criminal Behavior' },
+  { id: 3, label: 'Overclaimed' },
+  { id: 4, label: 'Data Right' },
+  { id: 5, label: 'Marketing Blacklash' }
+];
 const formData = reactive({
   title: '',
   year: new Date().getFullYear(), 
@@ -129,6 +161,7 @@ const formData = reactive({
   customType: '',
   type: '',
   relatedInitiative: '',
+  customCategory:'',
   tags: '',
   description: '',
   countryId: '',
@@ -162,6 +195,12 @@ async function handleTypeChange() {
       this.formData.customType = '';
   }
 }
+async function handleCategoryChange() {
+    if (this.formData.relatedInitiative !== 'other') {
+      this.formData.customCategory = '';
+  }
+}
+
 const notification = reactive({
   message: '',
   type: 'success' // 'success' or 'error'
@@ -194,13 +233,16 @@ async function handleSubmit() {
 
     // 2. Prepare data for Supabase (Map form fields to table columns)
     //    NOTE: Adjust column names and data types as per your 'anti_consumer_event' table schema
-    function resolveField(value, customValue) {
+   /* function resolveField(value, customValue) {
     return value === 'other' ? customValue : value;
+    }*/
+  function resolveField(value, customValue) {
+    return value === 'other' ? customValue : Number(value); // ensure value is a number
     }
 
     const industryToSave = resolveField(formData.industry, formData.customIndustry);
     const typeToSave = resolveField(formData.type, formData.customType);
-    const categoryToSave = resolveField(formData.category, formData.customCategory);
+    const categoryToSave = resolveField(formData.relatedInitiative, formData.customCategory);
 
     const eventData = {
       event_headline: formData.title,
