@@ -3,62 +3,96 @@ import { supabase } from '@/supabaseClient';
 /**
  * Signup user & create profile
  */
-export async function signUpWithProfile(formData) {
-  const { email, password, ...profile } = formData;
+export async function signUpWithProfile({email, password, username, first_name, last_name, phone_number, avatarFile}) {
+ // return await supabase.auth.signUp({
 
-  const { data, error } = await supabase.auth.signUp({
+ const { data: signUpData, error } = await supabase.auth.signUp({
     email,
     password,
-    phone: formData.phone, 
+    //phone: formData.phone, 
     options: {
         data: {
-          full_name: `${formData.first_name} ${formData.last_name}`,
-          username: formData.username,
-          phoneNumber: formData.phone, 
+          username,
+          first_name,
+          last_name,
+          phone_number 
         }
       }
   });
 
   if (error) return { error };
-  return {data};
+  const userId = signUpData.user?.id;
+  const user = signUpData.user;
+  if (!userId) {
+    return { error: new Error('User ID not available. Check if email confirmation is required.') };
+  }
+  let avatarUrl = null;
+  if (avatarFile) {
+    const { data: storageData, error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(`public/${userId}`, avatarFile, {
+        cacheControl: '3600',
+        upsert: true
+      });
+
+    if (uploadError) {
+      return { error: uploadError };
+    }
+
+    const { data: publicUrlData } = supabase
+      .storage
+      .from('avatars')
+      .getPublicUrl(`public/${userId}`);
+    
+    avatarUrl = publicUrlData.publicUrl;
+  }
+
+  const { error: profileError } = await supabase.from('users_profile').insert({
+    id: userId,
+    email,
+    username,
+    first_name,
+    last_name,
+    phone_number,
+    avatar_url: avatarUrl
+  });
+
+  return { error: profileError };
 }
 
-/**
- * Login user
- */
+
 export async function signIn(email, password) {
   return await supabase.auth.signInWithPassword({ email, password });
 }
 
-/**
- * Get current user profile
- */
 export async function getUserProfile() {
-  const {
-    data: { user },
-    error
-  } = await supabase.auth.getUser();
-
-  // Return immediately if there's an error getting the user or if no user is found
-  if (error || !user) {
-    return { user: null, profile: null, error: error || new Error('User not found.') };
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  console.log("Current user:", user);
+  if (userError || !user) {
+    console.error("No user or user fetch error:", userError);
+    return { data: null, error: userError || new Error("No user found") };
   }
 
-  // User is authenticated, now try to get the profile
   const { data: profile, error: profileError } = await supabase
-    .from('users_profile')
-    .select('*')
-    .eq('id', user.id)
-    .maybeSingle();
+    .from("users_profile")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle(); // ✅ prevents the "multiple or no rows" crash
+  console.log("Fetched profile:", profile);
 
-  // Return profile error if it occurs, but still include the user object
   if (profileError) {
-    return { user, profile: null, error: profileError };
+    console.error("Failed to load profile:", profileError.message);
+    return { data: null, error: profileError };
   }
 
-  // Return user and profile (profile might be null if .maybeSingle() found nothing)
-  return { user, profile, error: null };
+  if (!profile) {
+    console.warn("No profile found for user:", user.id);
+    return { data: null, error: new Error("Profile not found") };
+  }
+
+  return { data: profile, error: null };
 }
+
 
 /**
  * Logout

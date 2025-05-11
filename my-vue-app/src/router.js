@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from './components/HomePage.vue';
 import LoginPage from './components/LoginPage.vue';
 import DataEntryForm from './components/DataEntryForm.vue'; // Import the new form component
+import UserProfile from './components/UserProfile.vue';
 
 const routes = [
   {
@@ -21,6 +22,11 @@ const routes = [
     component: DataEntryForm,
     //meta: { requiresAuth: true } // Mark this route as requiring authentication
   },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: UserProfile,
+  }
 ];
 
 const router = createRouter({

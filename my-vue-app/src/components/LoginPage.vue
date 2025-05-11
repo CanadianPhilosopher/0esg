@@ -49,6 +49,11 @@
           <label for="signup-phone">Phone Number</label>
           <input type="tel" id="signup-phone" v-model="signupForm.phone" placeholder="+1 415 324 567">
         </div>
+        <div class="form-group">
+          <label for="signup-avatar">Profile Picture</label>
+          <input type="file" id="signup-avatar" @change="handleAvatarUpload">
+        </div>
+
          <div class="form-group">
           <label for="signup-password">Password</label>
           <input type="password" id="signup-password" v-model="signupForm.password" required>
@@ -98,7 +103,11 @@ function showNotification(msg, type = 'success') {
     notificationMessage.value = '';
   }, 3000);
 }
+const avatarFile = ref(null); // for holding the uploaded file
 
+function handleAvatarUpload(event) {
+  avatarFile.value = event.target.files[0];
+}
 
 async function handleSignup() {
   if (signupForm.password !== signupForm.confirmPassword) {
@@ -112,7 +121,8 @@ async function handleSignup() {
     username: signupForm.username,
     first_name: signupForm.firstName,
     last_name: signupForm.lastName,
-    phone_number: signupForm.phone
+    phone_number: signupForm.phone,
+    avatarFile: avatarFile.value
   });
 
   if (error) {

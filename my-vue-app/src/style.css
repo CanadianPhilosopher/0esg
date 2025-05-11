@@ -376,6 +376,20 @@
     cursor: pointer;
   }
   
+  .profile-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .avatar-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+  }
+  
   /* Responsiveness */
   @media (max-width: 600px) {
       .login-signup-container {

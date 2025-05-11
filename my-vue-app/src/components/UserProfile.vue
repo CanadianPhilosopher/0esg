@@ -11,6 +11,11 @@
       </div>
   
       <div v-if="profile && !loading && !error" class="profile-details">
+        <div class="profile-item avatar-item">
+          <label>Avatar:</label>
+          <img :src="profile.avatar_url || defaultAvatar" alt="User Avatar" class="avatar-image" />
+        </div>
+
         <div class="profile-item">
           <label>Username:</label>
           <span>{{ profile.username }}</span>
@@ -48,6 +53,7 @@
   import { ref, onMounted } from 'vue';
   import { supabase } from '../supabaseClient'; 
   import { getUserProfile } from '../library/auth'; 
+  import defaultAvatar from '../assets/img-profile.svg';
   
   const profile = ref(null);
   const userEmail = ref('');
@@ -68,15 +74,15 @@
       }
       userEmail.value = session.user.email || 'Email not available';
   
-      // 2. Dapatkan detail profil dari tabel 'profiles'
-      const { profile: fetchedProfile, error: profileError } = await getUserProfile(); // Panggil fungsi dari library Anda
+      const { data: fetchedProfile, error: profileError } = await getUserProfile();
+
       if (profileError) throw profileError;
   
       if (fetchedProfile) {
         profile.value = fetchedProfile;
       } else {
         
-        profile.value = { username: 'N/A', first_name: '', last_name: '', phone_number: '', updated_at: null }; // Profil default minimal
+        profile.value = { username: 'N/A', first_name: '', last_name: '', phone_number: '', updated_at: null }; 
         console.warn("Profile data not found for this user.");
         // error.value = "Profile details not found."; // Atau tampilkan error
       }
@@ -96,6 +102,7 @@
   function goToEditProfile() {
     router.push('/edit-profile');
   }
+  
   </script>
   
   <style scoped>
